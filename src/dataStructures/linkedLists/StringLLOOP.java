@@ -3,14 +3,17 @@ package dataStructures.linkedLists;
 public class StringLLOOP {
 
     private StringNode front; //reference to the first node of the LL
+    private int size;
 
     public StringLLOOP(){
         front = null;
+        size = 0;
     }
 
     public void addToFront(String newItem){
         StringNode node = new StringNode(newItem, front);
         front = node;
+        size++;
     }
 
     public void addToBack(String newItem){
@@ -19,6 +22,8 @@ public class StringLLOOP {
         for(pointer = front; pointer.next != null; pointer = pointer.next){
         }
         pointer.next = node;
+        size++;
+
     }
 
     public void addAfterIndex(int index, String newItem){
@@ -31,6 +36,7 @@ public class StringLLOOP {
             }
             counter++;
         }
+        size++;
     }
 
     public void addArrayAfterIndexBToF(int index, String[] newItems){
@@ -44,6 +50,7 @@ public class StringLLOOP {
             }
             counter++;
         }
+        size += newItems.length;
     }
 
     public void addArrayAfterIndexFtoB(int index, String[] newItems){
@@ -57,6 +64,7 @@ public class StringLLOOP {
             }
             counter++;
         }
+        size += newItems.length;
     }
 
     public boolean search(String target){
@@ -78,6 +86,8 @@ public class StringLLOOP {
     }
 
     public boolean remove(String target){
+
+        size--;
 
         StringNode behindPointer = null;
         StringNode pointer = front;
@@ -131,11 +141,7 @@ public class StringLLOOP {
         return list;
     }
 
-    public int size(){
-        int counter = 0;
-        for(StringNode pointer = front; pointer != null; pointer = pointer.next){
-            counter++;
-        }
-        return counter;
+    public int getSize() {
+        return size;
     }
 }

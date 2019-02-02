@@ -6,13 +6,17 @@ public class LLDriver {
 
         StringLLOOP movies = new StringLLOOP();
         movies.addToFront("Inception");
-        movies.addToFront("Star");
-        movies.addToBack("Familee");
-        System.out.println(movies.toString());
-        String[] movieArray = {"T1", "T2", "T3"};
-        movies.addArrayAfterIndexFtoB(1, movieArray);
-        System.out.println(movies.toString());
-        System.out.println(movies.size());
+        movies.addToFront("a star is born");
+        movies.addToFront("interstellar");
+
+        System.out.println(movies.search("Star Wars"));
+        System.out.println(movies.search("Inception"));
+        System.out.println(movies.getSize());
+
+        StringLLOOP colors = new StringLLOOP();
+        colors.addToFront("blue");
+        colors.addToFront("navy");
+        System.out.println(colors.getSize());
 
 
     }
