@@ -1,6 +1,5 @@
-package dataStructures.linkedLists;
+package dataStructures.linkedLists.genericLL;
 
-import java.io.NotActiveException;
 import java.util.NoSuchElementException;
 
 public class GenericLL<T> {

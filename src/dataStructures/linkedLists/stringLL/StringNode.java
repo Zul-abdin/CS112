@@ -1,4 +1,4 @@
-package dataStructures.linkedLists;
+package dataStructures.linkedLists.stringLL;
 
 public class StringNode {
 

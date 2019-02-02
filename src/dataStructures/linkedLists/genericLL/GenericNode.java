@@ -1,4 +1,4 @@
-package dataStructures.linkedLists;
+package dataStructures.linkedLists.genericLL;
 
 public class GenericNode<T> {
 
