@@ -60,6 +60,20 @@ public class Polynomial {
 	 */
 	public static Node add(Node poly1, Node poly2) {
 		/** COMPLETE THIS METHOD **/
+		Node front = null;
+		Node p1 = poly1, p2 = poly2;
+		while(p1 != null && p2 != null){
+		    if(poly1.term.coeff > poly2.term.coeff){
+		        Node n = new Node(p2.term.coeff, p2.term.degree, front);
+		        front = n;
+            } else if(poly1.term.coeff < poly2.term.coeff){
+		        Node n = new Node(p1.term.coeff, p1.term.degree, front);
+		        front = n;
+            } else {
+		        Node n = new Node(p1.term.coeff + p2.term.coeff, p1.term.degree, front);
+		        front = n;
+            }
+        }
 		// FOLLOWING LINE IS A PLACEHOLDER TO MAKE THIS METHOD COMPILE
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
 		return null;
