@@ -63,20 +63,32 @@ public class Polynomial {
 		Node front = null;
 		Node p1 = poly1, p2 = poly2;
 		while(p1 != null && p2 != null){
-		    if(poly1.term.coeff > poly2.term.coeff){
-		        Node n = new Node(p2.term.coeff, p2.term.degree, front);
-		        front = n;
-            } else if(poly1.term.coeff < poly2.term.coeff){
-		        Node n = new Node(p1.term.coeff, p1.term.degree, front);
-		        front = n;
+		    if(p1 == null || p1.term.degree > p2.term.degree){
+		        front = new Node(p2.term.coeff, p2.term.degree, front);
+		        p2 = p2.next;
+            } else if(p2 == null || p1.term.degree < p2.term.degree){
+		        front = new Node(p1.term.coeff, p1.term.degree, front);
+		        p1 = p1.next;
             } else {
-		        Node n = new Node(p1.term.coeff + p2.term.coeff, p1.term.degree, front);
-		        front = n;
+		        front = new Node(p1.term.coeff + p2.term.coeff, p1.term.degree, front);
+		        p1 = p1.next;
+		        p2 = p2.next;
+            }
+
+            if(p1 == null){
+		        for(Node ptr = p2; ptr != null; ptr = ptr.next){
+                    front = new Node(p2.term.coeff, p2.term.degree, front);
+                }
+            }
+            if(p2 == null){
+		        for(Node ptr = p1; ptr != null; ptr = ptr.next){
+		            front = new Node(p1.term.coeff, p1.term.degree, front);
+                }
             }
         }
 		// FOLLOWING LINE IS A PLACEHOLDER TO MAKE THIS METHOD COMPILE
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
-		return null;
+		return front;
 	}
 	
 	/**
