@@ -103,9 +103,17 @@ public class Polynomial {
 	 */
 	public static Node multiply(Node poly1, Node poly2) {
 		/** COMPLETE THIS METHOD **/
+		Node front = null;
+
+		for(Node p1 = poly1; p1 != null; p1 = p1.next){
+		    for(Node p2 = poly2; p2 != null; p2 = p2.next){
+		        front = new Node(p1.term.coeff * p2.term.coeff, p1.term.degree + p2.term.degree, front);
+            }
+        }
+        front = simplify(front);
 		// FOLLOWING LINE IS A PLACEHOLDER TO MAKE THIS METHOD COMPILE
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
-		return null;
+		return front;
 	}
 		
 	/**
@@ -121,8 +129,51 @@ public class Polynomial {
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
 		return 0;
 	}
-	
-	/**
+
+    /**
+     *  Helper method, simplifies polynomials with more than
+     *  one nodes that have the same degree
+     *
+     * @param poly Polynomial (front of linked list) to simplify
+     * @return Polynomial which has been simplified
+     */
+    public static Node simplify(Node poly){
+
+        Node ptr = poly;
+        while (ptr != null) {
+            Node post = ptr.next;
+            Node prev = ptr;
+            while (post != null) {
+                if (ptr.term.degree == post.term.degree) {
+                    ptr.term.coeff += post.term.coeff;
+
+                    prev.next = post.next;
+                }
+                prev = post;
+                post = post.next;
+            }
+            ptr = ptr.next;
+        }
+        return poly;
+    }
+
+    /**
+     *  Helper method, puts degrees in the proper order
+     *
+     * @param poly Polynomial (front of linked list) to simplify
+     * @return Polynomial which has been ordered
+     */
+    public static Node order(Node poly){
+        Node front = null;
+        for(Node ptr = poly; ptr != null; ptr = ptr.next){
+            int max = ptr.term.degree;
+            for(Node post = poly.next; post != null; post = post.next){
+            }
+        }
+        return front;
+    }
+
+    /**
 	 * Returns string representation of a polynomial
 	 * 
 	 * @param poly Polynomial (front of linked list)
