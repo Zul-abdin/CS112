@@ -46,6 +46,26 @@ public class IntLL {
         return false;
     }
 
+    public static Node addInAscending (Node f, int newItem) {
+        if(f.data >= newItem){
+            Node n = new Node(newItem, f);
+            return n;
+        }
+        Node prev = f;
+        Node ptr = f.next;
+        while (ptr != null){
+            if(prev.data <= newItem && ptr.data >= newItem){
+
+                prev.next = new Node(newItem, ptr);
+                return f;
+            }
+            prev = ptr;
+            ptr = ptr.next;
+        }
+        prev.next = new Node(newItem, null);
+        return f;
+    }
+
     public static Node delete (Node f, int target){
 
         Node pointer = f;
@@ -86,6 +106,24 @@ public class IntLL {
         Front = delete(Front, 6);
         traverse(Front);
         Front = delete(Front, 4);
+        traverse(Front);
+        Front = addInAscending(Front, 7);
+        Front = addInAscending(Front, 7);
+        Front = addInAscending(Front, 12);
+        Front = addInAscending(Front, 2);
+        Front = addInAscending(Front, 14);
+        Front = addInAscending(Front, 10);
+        Front = addInAscending(Front, 160);
+        Front = addInAscending(Front, 124);
+        Front = addInAscending(Front, 125);
+        Front = addInAscending(Front, 10);
+        Front = addInAscending(Front, 125);
+        Front = addInAscending(Front, 10);
+        Front = addInAscending(Front, 125);
+        Front = addInAscending(Front, 100);
+        Front = addInAscending(Front, 90);
+        Front = addInAscending(Front, 180);
+        Front = addInAscending(Front, 85);
         traverse(Front);
 
     }

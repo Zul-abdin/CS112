@@ -63,29 +63,30 @@ public class Polynomial {
 		Node front = null;
 		Node p1 = poly1, p2 = poly2;
 		while(p1 != null && p2 != null){
-		    if(p1 == null || p1.term.degree > p2.term.degree){
-		        front = new Node(p2.term.coeff, p2.term.degree, front);
+		    if(p1.term.degree > p2.term.degree){
+		        front = addToTail(p2.term.coeff, p2.term.degree, front);
 		        p2 = p2.next;
-            } else if(p2 == null || p1.term.degree < p2.term.degree){
-		        front = new Node(p1.term.coeff, p1.term.degree, front);
+            } else if(p1.term.degree < p2.term.degree){
+		        front = addToTail(p1.term.coeff, p1.term.degree, front);
 		        p1 = p1.next;
             } else {
-		        front = new Node(p1.term.coeff + p2.term.coeff, p1.term.degree, front);
+		        front = addToTail(p1.term.coeff + p2.term.coeff, p1.term.degree, front);
 		        p1 = p1.next;
 		        p2 = p2.next;
             }
 
             if(p1 == null){
 		        for(Node ptr = p2; ptr != null; ptr = ptr.next){
-                    front = new Node(p2.term.coeff, p2.term.degree, front);
+                    front = addToTail(p2.term.coeff, p2.term.degree, front);
                 }
             }
             if(p2 == null){
 		        for(Node ptr = p1; ptr != null; ptr = ptr.next){
-		            front = new Node(p1.term.coeff, p1.term.degree, front);
+		            front = addToTail(p1.term.coeff, p1.term.degree, front);
                 }
             }
         }
+        front = removeZeroCoeff(front);
 		// FOLLOWING LINE IS A PLACEHOLDER TO MAKE THIS METHOD COMPILE
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
 		return front;
@@ -107,7 +108,7 @@ public class Polynomial {
 
 		for(Node p1 = poly1; p1 != null; p1 = p1.next){
 		    for(Node p2 = poly2; p2 != null; p2 = p2.next){
-		        front = new Node(p1.term.coeff * p2.term.coeff, p1.term.degree + p2.term.degree, front);
+		        front = addInAscending(p1.term.coeff * p2.term.coeff, p1.term.degree + p2.term.degree, front);
             }
         }
         front = simplify(front);
@@ -125,9 +126,14 @@ public class Polynomial {
 	 */
 	public static float evaluate(Node poly, float x) {
 		/** COMPLETE THIS METHOD **/
+		float total = 0;
+		for(Node ptr = poly; ptr != null; ptr = ptr.next){
+		    total += evalTerm(ptr, x);
+        }
+
 		// FOLLOWING LINE IS A PLACEHOLDER TO MAKE THIS METHOD COMPILE
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
-		return 0;
+		return total;
 	}
 
     /**
@@ -137,19 +143,17 @@ public class Polynomial {
      * @param poly Polynomial (front of linked list) to simplify
      * @return Polynomial which has been simplified
      */
-    public static Node simplify(Node poly){
+    private static Node simplify(Node poly){
 
         Node ptr = poly;
         while (ptr != null) {
             Node post = ptr.next;
-            Node prev = ptr;
             while (post != null) {
                 if (ptr.term.degree == post.term.degree) {
                     ptr.term.coeff += post.term.coeff;
 
-                    prev.next = post.next;
+                    ptr.next = post.next;
                 }
-                prev = post;
                 post = post.next;
             }
             ptr = ptr.next;
@@ -158,19 +162,84 @@ public class Polynomial {
     }
 
     /**
-     *  Helper method, puts degrees in the proper order
+     *  Helper method, removes Zero coeffs of LL
      *
-     * @param poly Polynomial (front of linked list) to simplify
-     * @return Polynomial which has been ordered
+     * @param front Polynomial (front of linked list) to add to
+     * @return Polynomial with no zero terms
      */
-    public static Node order(Node poly){
-        Node front = null;
-        for(Node ptr = poly; ptr != null; ptr = ptr.next){
-            int max = ptr.term.degree;
-            for(Node post = poly.next; post != null; post = post.next){
+    private static Node removeZeroCoeff(Node front) {
+        Node prev = null;
+        Node ptr = front;
+        while(ptr != null){
+            if(ptr.term.coeff == 0){
+                if(prev == null){
+                    front = null;
+                } else {
+                    prev.next = ptr.next;
+                }
             }
+            prev = ptr;
+            ptr = ptr.next;
         }
         return front;
+    }
+
+    /**
+     *  Helper method, adds to rear of LL
+     *
+     * @param front Polynomial (front of linked list) to add to
+     * @return Polynomial with added node
+     */
+    private static Node addToTail(float coeff, int degree, Node front){
+        if(front == null){
+            front = new Node(coeff, degree, null);
+            return front;
+        }
+        Node temp = front;
+        while(temp.next != null){
+            temp = temp.next;
+        }
+        temp.next = new Node(coeff, degree, null);
+        return front;
+    }
+
+    /**
+     *  Helper method, adds to LL in order of degrees
+     *
+     * @param front Polynomial (front of linked list) to add to
+     * @return Polynomial with added node
+     */
+    private static Node addInAscending(float coeff, int deg, Node front){
+        if(front == null){
+            front = new Node(coeff, deg, null);
+            return front;
+        }
+        if(front.term.degree >= deg){
+            Node n = new Node(coeff, deg, front);
+            return n;
+        }
+        Node prev = front;
+        Node ptr = front.next;
+        while (ptr != null){
+            if(prev.term.degree <= deg && ptr.term.degree >= deg){
+
+                prev.next = new Node(coeff, deg, ptr);
+                return front;
+            }
+            prev = ptr;
+            ptr = ptr.next;
+        }
+        prev.next = new Node(coeff, deg, null);
+        return front;
+    }
+
+    private static float evalTerm(Node n, float eval){
+        float total = 1;
+        for(int deg = n.term.degree; deg > 0; deg--){
+            total *= eval;
+        }
+        total *= n.term.coeff;
+        return total;
     }
 
     /**
