@@ -88,6 +88,15 @@ public class IntLL {
 
     }
 
+    public static Node replicate(Node front){
+        if(front == null){
+            return null;
+        }
+        Node f = new Node(front.data, null);
+        f.next = replicate(front.next);
+        return f;
+    }
+
     public static void main(String[] args) {
 
         Node Front = null;
@@ -125,6 +134,9 @@ public class IntLL {
         Front = addInAscending(Front, 180);
         Front = addInAscending(Front, 85);
         traverse(Front);
+
+        Node fr1 = replicate(Front);
+        traverse(fr1);
 
     }
 }

@@ -60,6 +60,13 @@ public class Polynomial {
 	 */
 	public static Node add(Node poly1, Node poly2) {
 		/** COMPLETE THIS METHOD **/
+		if(poly1 == null){
+		    Node poly2Copy = replicate(poly2);
+		    return poly2Copy;
+        } else if(poly2 == null){
+		    Node poly1Copy = replicate(poly1);
+		    return poly1Copy;
+        }
 		Node front = null;
 		Node p1 = poly1, p2 = poly2;
 		while(p1 != null && p2 != null){
@@ -112,11 +119,12 @@ public class Polynomial {
             }
         }
         front = simplify(front);
+		front = removeZeroCoeff(front);
 		// FOLLOWING LINE IS A PLACEHOLDER TO MAKE THIS METHOD COMPILE
 		// CHANGE IT AS NEEDED FOR YOUR IMPLEMENTATION
 		return front;
 	}
-		
+
 	/**
 	 * Evaluates a polynomial at a given value.
 	 * 
@@ -172,14 +180,22 @@ public class Polynomial {
         Node ptr = front;
         while(ptr != null){
             if(ptr.term.coeff == 0){
-                if(prev == null){
-                    front = null;
+                if(ptr.equals(front)){
+                    if(front.next == null){
+                        front = null;
+                        return front;
+                    } else {
+                        front = front.next;
+                        ptr = ptr.next;
+                    }
                 } else {
                     prev.next = ptr.next;
+                    ptr = ptr.next;
                 }
+            } else {
+                prev = ptr;
+                ptr = ptr.next;
             }
-            prev = ptr;
-            ptr = ptr.next;
         }
         return front;
     }
@@ -233,6 +249,12 @@ public class Polynomial {
         return front;
     }
 
+    /**
+     *  Helper method, evaluates one term in a Polynomial
+     *
+     * @param n Node (term to evaluate) may NOT be the front
+     * @return float of evaluated term
+     */
     private static float evalTerm(Node n, float eval){
         float total = 1;
         for(int deg = n.term.degree; deg > 0; deg--){
@@ -240,6 +262,21 @@ public class Polynomial {
         }
         total *= n.term.coeff;
         return total;
+    }
+
+    /**
+     *  Helper method, replicates Polynomial with all new Nodes
+     *
+     * @param front Node (Polynomial to replicate)
+     * @return front Node of replicated linked list
+     */
+    private static Node replicate(Node front){
+        if(front == null){
+            return null;
+        }
+        Node f = new Node(front.term.coeff, front.term.degree, null);
+        f.next = replicate(front.next);
+        return f;
     }
 
     /**
