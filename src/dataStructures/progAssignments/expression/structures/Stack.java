@@ -1,4 +1,4 @@
-package structures;
+package dataStructures.progAssignments.expression.structures;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;

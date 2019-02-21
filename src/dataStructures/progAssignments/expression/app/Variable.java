@@ -1,4 +1,4 @@
-package app;
+package dataStructures.progAssignments.expression.app;
 
 /**
  * This class holds a (name, integer value) pair for a simple (non-array) variable. 

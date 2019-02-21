@@ -1,4 +1,4 @@
-package app;
+package dataStructures.progAssignments.expression.app;
 
 /**
  * This class holds a (name, array of integer values) pair for an array. 
