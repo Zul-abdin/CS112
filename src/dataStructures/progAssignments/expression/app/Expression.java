@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-import structures.Stack;
+import dataStructures.progAssignments.expression.structures.Stack;
 
 public class Expression {
 
