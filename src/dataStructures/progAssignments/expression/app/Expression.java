@@ -1,10 +1,10 @@
-package dataStructures.progAssignments.expression.app;
+package dataStructures.progAssignments.expression.app; //revert
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-import dataStructures.progAssignments.expression.structures.Stack;
+import dataStructures.progAssignments.expression.structures.Stack; //revert
 
 public class Expression {
 
@@ -24,6 +24,43 @@ public class Expression {
     public static void 
     makeVariableLists(String expr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
     	/** COMPLETE THIS METHOD **/
+    	String updatedExpr = removeSpaces(expr);
+        System.out.println("No Spaces: " + updatedExpr);
+    	StringTokenizer st = new StringTokenizer(updatedExpr,  delims);
+    	while(st.hasMoreTokens()){
+            String token = st.nextToken();
+            int postIndex = updatedExpr.indexOf(token) + token.length();
+            if(postIndex > updatedExpr.length() - 1 && !(vars.contains(new Variable(token)))){
+                vars.add(new Variable(token));
+                System.out.println("Added " + token + " To vars");
+                break;
+            }
+            switch (updatedExpr.charAt(postIndex)) {
+                case '[':
+                    Array newArr = new Array(token);
+                    if(!arrays.contains(newArr)) {
+                        arrays.add(newArr);
+                        System.out.println("Added " + token + " To arrays");
+                    }
+                    break;
+                case '+':
+                case '*':
+                case '-':
+                case '/':
+                case ')':
+                case '(':
+                case ']':
+                    Variable newVar = new Variable(token);
+                    if(!vars.contains(newVar)) {
+                        vars.add(newVar);
+                        System.out.println("Added " + token + " To vars");
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+        }
     	/** DO NOT create new vars and arrays - they are already created before being sent in
     	 ** to this method - you just need to fill them in.
     	 **/
@@ -81,5 +118,16 @@ public class Expression {
     	/** COMPLETE THIS METHOD **/
     	// following line just a placeholder for compilation
     	return 0;
+    }
+
+    private static String removeSpaces(String str){
+        String result = "";
+        for(int i = 0; i < str.length(); i++){
+            char ch = str.charAt(i);
+            if(ch != ' '){
+                result += ch;
+            }
+        }
+        return result;
     }
 }

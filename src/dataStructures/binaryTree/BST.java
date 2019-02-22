@@ -1,6 +1,8 @@
 package dataStructures.binaryTree;
 
 
+import java.util.NoSuchElementException;
+
 //extends forces the data type T to implement the interface Comparable
 public class BST<T extends Comparable<T>> {
 
@@ -50,12 +52,90 @@ public class BST<T extends Comparable<T>> {
 
          //2. insert at failure point
         BSTNode<T> node = new BSTNode<T>(newkey, null, null);
-        if(c < 0){
+
+        if( prev == null ){
+            //tree is empty
+            root = node;
+        }
+        else if(c < 0){
             prev.left = node;
         } else {
             prev.right = node;
         }
         size++;
+    }
+
+    public static <T extends Comparable<T>> void inOrder(BSTNode<T> node){
+
+        if (node == null){
+            return;
+        }
+
+        inOrder(node.left);
+        System.out.print(node.key + " ");
+        inOrder(node.right);
+    }
+
+    public void delete(T target){
+        //1. Find node to delete, call it x
+        BSTNode<T> x = root;
+        BSTNode<T> p = null; //previous or parent
+
+        int c = 0;
+        while(x != null){
+            c = target.compareTo(x.key);
+            if(c == 0){
+                break; //found target
+            }
+            p = x;
+            x = (c < 0) ? x.left : x.right;
+        }
+
+        if(x ==null){
+            throw new NoSuchElementException("Target not found");
+        }
+        BSTNode<T> y = null;
+        if(x.left != null && x.right != null){
+            y = x.left;
+            p = x;
+            while(y != null){
+                p = y;
+                y = y.right;
+            }
+            //copy y's key over x's key
+            x.key = y.key;
+
+            //Prepare to delete
+            x = y;
+        }
+        //Handle Case 1 and 2
+        //(1) leaf
+        //(2) One Child
+        //(3) Two Children
+
+        BSTNode<T> tmp = (x.right != null) ? x.right : x.left;
+
+        if(x == p.left){
+            p.left = tmp;
+        } else if(x == p.right) {
+            p.right = tmp;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        BST<Integer> bst = new BST<>();
+        bst.insert(15);
+        bst.insert(13);
+        bst.insert(71);
+        bst.insert(9);
+        bst.insert(14);
+        bst.insert(10);
+        bst.insert(7);
+        bst.insert(30);
+        inOrder(bst.root);
+
+
     }
 
 }
