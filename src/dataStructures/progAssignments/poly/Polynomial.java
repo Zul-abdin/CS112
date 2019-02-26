@@ -84,12 +84,12 @@ public class Polynomial {
 
             if(p1 == null){
 		        for(Node ptr = p2; ptr != null; ptr = ptr.next){
-                    front = addToTail(p2.term.coeff, p2.term.degree, front);
+                    front = addToTail(ptr.term.coeff, ptr.term.degree, front);
                 }
             }
             if(p2 == null){
 		        for(Node ptr = p1; ptr != null; ptr = ptr.next){
-		            front = addToTail(p1.term.coeff, p1.term.degree, front);
+		            front = addToTail(ptr.term.coeff, ptr.term.degree, front);
                 }
             }
         }
