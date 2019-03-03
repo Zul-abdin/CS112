@@ -42,5 +42,14 @@ public class DLL<T> {
             }
         }
     }
+    public DLLNode moveToFront(DLLNode<T> front, DLLNode<T> target) {
+        if(front == null || front == target || target == null){
+            return front;
+        }
+        target.next = front;
+        target.previous = null;
+        front.previous = null;
+        return target;
+    }
 
 }

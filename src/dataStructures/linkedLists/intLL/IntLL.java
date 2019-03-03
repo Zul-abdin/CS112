@@ -46,6 +46,36 @@ public class IntLL {
         return false;
     }
 
+    public static Node addBefore (Node front, int target, int newItem){
+        if(front.data == target){
+            front = new Node(newItem, front);
+            return front;
+        }
+        for(Node ptr = front; ptr.next != null; ptr = ptr.next){
+            if(ptr.next.data == target){
+                Node k = new Node(newItem, ptr.next);
+                ptr.next = k;
+                return front;
+            }
+        }
+        return front;
+    }
+    public static Node deleteEveryOther (Node front) {
+        if (front == null){
+            return  null;
+        }
+        for(Node ptr = front; ptr.next != null; ptr = ptr.next){
+            if(ptr.next.next == null){
+                ptr.next = null;
+                break;
+            } else {
+                ptr.next = ptr.next.next;
+            }
+        }
+        return front;
+    }
+
+
     public static Node addInAscending (Node f, int newItem) {
         if(f.data >= newItem){
             Node n = new Node(newItem, f);
@@ -104,6 +134,7 @@ public class IntLL {
         Front = addToFront(5, Front);
         Front = addToFront(4, Front);
         Front = addToFront(3, Front);
+        Front = addToFront(7, Front);
         traverse(Front);
         Front = deleteFront(Front);
         traverse(Front);
@@ -112,31 +143,7 @@ public class IntLL {
         System.out.println(addAfter(Front, 6, 10));
         System.out.println(addAfter(Front, 6, 8));
         traverse(Front);
-        Front = delete(Front, 6);
+        Front = deleteEveryOther(Front);
         traverse(Front);
-        Front = delete(Front, 4);
-        traverse(Front);
-        Front = addInAscending(Front, 7);
-        Front = addInAscending(Front, 7);
-        Front = addInAscending(Front, 12);
-        Front = addInAscending(Front, 2);
-        Front = addInAscending(Front, 14);
-        Front = addInAscending(Front, 10);
-        Front = addInAscending(Front, 160);
-        Front = addInAscending(Front, 124);
-        Front = addInAscending(Front, 125);
-        Front = addInAscending(Front, 10);
-        Front = addInAscending(Front, 125);
-        Front = addInAscending(Front, 10);
-        Front = addInAscending(Front, 125);
-        Front = addInAscending(Front, 100);
-        Front = addInAscending(Front, 90);
-        Front = addInAscending(Front, 180);
-        Front = addInAscending(Front, 85);
-        traverse(Front);
-
-        Node fr1 = replicate(Front);
-        traverse(fr1);
-
     }
 }
