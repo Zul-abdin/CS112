@@ -186,17 +186,31 @@ public class Expression {
                 if (eat('(')) { // parentheses
                     x = parseExpression();
                     eat(')');
+                } else if (eat('[')){ // Array brackets
+                    x = parseExpression();
+                    eat(']');
                 } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
                     while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
                     x = Float.parseFloat(updatedExpr.substring(startPos, this.pos));
-                } else if (ch >= 'A' && ch <= 'z') { // functions
-                    while (ch >= 'A' && ch <= 'z') nextChar();
+                } else if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') { // functions
+                    while (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') nextChar();
                     String func = updatedExpr.substring(startPos, this.pos);
                     for(int i = 0; i < vars.size(); i++){
                             if(vars.get(i).name.equals(func)){
                                 x = vars.get(i).value;
                                 return x;
                             }
+                    }
+                    if(this.pos != updatedExpr.length() - 1){
+                        if(eat('[')){
+                            for(int i = 0; i < arrays.size(); i++){
+                                if(arrays.get(i).name.equals(func)){
+                                    x = arrays.get(i).values[(int)parseExpression()];
+                                    eat(']');
+                                    return x;
+                                }
+                            }
+                        }
                     }
                     x = parseFactor();
 
