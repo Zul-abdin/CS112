@@ -133,11 +133,11 @@ public class Expression {
         return new Object() {
             int pos = -1, ch;
 
-            void nextChar() {
+            private void nextChar() {
                 ch = (++pos < updatedExpr.length()) ? updatedExpr.charAt(pos) : -1;
             }
 
-            boolean eat(int charToEat) {
+            private boolean eat(int charToEat) {
                 while (ch == ' ') nextChar();
                 if (ch == charToEat) {
                     nextChar();
@@ -146,7 +146,7 @@ public class Expression {
                 return false;
             }
 
-            float parse() {
+            private float parse() {
                 nextChar();
                 float x = parseExpression();
                 if (pos < updatedExpr.length()) throw new RuntimeException("Unexpected: " + (char) ch);
@@ -159,7 +159,7 @@ public class Expression {
             // factor = `+` factor | `-` factor | `(` expression `)`
             //        | number | functionName factor | factor `^` factor
 
-            float parseExpression() {
+            private float parseExpression() {
                 float x = parseTerm();
                 for (; ; ) {
                     if (eat('+')) x += parseTerm(); // addition
@@ -168,7 +168,7 @@ public class Expression {
                 }
             }
 
-            float parseTerm() {
+            private float parseTerm() {
                 float x = parseFactor();
                 for (; ; ) {
                     if (eat('*')) x *= parseFactor(); // multiplication
@@ -177,7 +177,7 @@ public class Expression {
                 }
             }
 
-            float parseFactor() {
+            private float parseFactor() {
                 if (eat('+')) return parseFactor(); // unary plus
                 if (eat('-')) return -parseFactor(); // unary minus
 
