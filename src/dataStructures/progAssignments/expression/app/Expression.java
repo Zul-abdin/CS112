@@ -21,6 +21,7 @@ public class Expression {
      * @param vars   The variables array list - already created by the caller
      * @param arrays The arrays array list - already created by the caller
      */
+    @SuppressWarnings("Duplicates") //remove
     public static void
     makeVariableLists(String expr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
         /** COMPLETE THIS METHOD **/
@@ -86,6 +87,7 @@ public class Expression {
      * @param arrays The arrays array list - previously populated by makeVariableLists
      * @throws IOException If there is a problem with the input
      */
+    @SuppressWarnings("Duplicates") //remove
     public static void
     loadVariableValues(Scanner sc, ArrayList<Variable> vars, ArrayList<Array> arrays)
             throws IOException {
@@ -130,94 +132,140 @@ public class Expression {
         /** COMPLETE THIS METHOD **/
         // following line just a placeholder for compilation
         String updatedExpr = expr.replaceAll("\\s+", "");
-        return new Object() {
-            int pos = -1, ch;
+        float[] ans;
+        ans = parse(-1, 0, 0, updatedExpr, vars, arrays);
+        return ans[2];
+    }
+    private static float[] nextChar(int pos, int ch, float result, String updatedExpr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
+        float[] ans = new float[3];
+        ans[0] = pos;
+        ans[1] = ch;
+        ans[2] = result;
+        ans[0]++;
+        ans[1] = (ans[0] < updatedExpr.length()) ? updatedExpr.charAt((int)ans[0]) : -1;
+        return ans;
+    }
 
-            private void nextChar() {
-                ch = (++pos < updatedExpr.length()) ? updatedExpr.charAt(pos) : -1;
+    private static float[] parse(int pos, int ch, float result, String updatedExpr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
+        float[] ans = new float[3];
+        ans[0] = pos;
+        ans[1] = ch;
+        ans[2] = result;
+        ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+        ans = parseExpression((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+        if (ans[0] < updatedExpr.length()) throw new RuntimeException("Unexpected: " + (char) ans[1]);
+        return ans;
+    }
+
+    // Grammar:
+    // expression = term | expression `+` term | expression `-` term
+    // term = factor | term `*` factor | term `/` factor
+    // factor = `+` factor | `-` factor | `(` expression `)`
+    //        | number | functionName factor | factor `^` factor
+
+    private static float[] parseExpression(int pos, int ch, float result, String updatedExpr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
+        float[] ans = new float[3];
+        ans[0] = pos;
+        ans[1] = ch;
+        ans[2] = result;
+        ans = parseTerm((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+        for (; ; ) {
+            if (ans[1] == '+'){
+                ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                float temp = ans[2];
+                ans = parseTerm((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                ans[2] += temp; // addition
             }
+            else if (ans[1] =='-'){
+                ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                float temp = ans[2];
+                ans = parseTerm((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                ans[2] = temp - ans[2]; // subtraction
+            }
+            else return ans;
+        }
+    }
 
-            private boolean eat(int charToEat) {
-                while (ch == ' ') nextChar();
-                if (ch == charToEat) {
-                    nextChar();
-                    return true;
+    private static float[] parseTerm(int pos, int ch, float result, String updatedExpr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
+        float[] ans = new float[3];
+        ans[0] = pos;
+        ans[1] = ch;
+        ans[2] = result;
+        ans = parseFactor((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+        for (; ; ) {
+            if (ans[1] == '*'){
+                ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                float temp = ans[2];
+                ans = parseTerm((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                ans[2] *= temp; // multiplication
+            }
+            else if (ans[1] == '/'){
+                ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                float temp = ans[2];
+                ans = parseTerm((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                ans[2] = temp / ans[2]; // division
+            }
+            else return ans;
+        }
+    }
+
+    private static float[] parseFactor(int pos, int ch, float result, String updatedExpr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
+        float[] ans = new float[3];
+        ans[0] = pos;
+        ans[1] = ch;
+        ans[2] = result;
+
+        float x = 0;
+        int startPos = (int)ans[0];
+        if (ans[1] == '(') { // parentheses
+            ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+            ans = parseExpression((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+            if(ans[1] == ')'){
+                ans[0]++;
+                ans[1] = (ans[0] < updatedExpr.length()) ? updatedExpr.charAt((int)ans[0]) : -1;
+            }
+        } else if (ans[1] == '['){ // Array brackets
+            ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+            ans = parseExpression((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+            if(ans[1] == ']'){
+                ans[0]++;
+                ans[1] = (ans[0] < updatedExpr.length()) ? updatedExpr.charAt((int)ans[0]) : -1;
+            }
+        } else if ((ans[1] >= '0' && ans[1] <= '9') || ans[1] == '.') { // numbers
+            while ((ans[1] >= '0' && ans[1] <= '9') || ans[1] == '.'){
+                ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+            }
+            ans[2] = Float.parseFloat(updatedExpr.substring(startPos, (int)ans[0]));
+        } else if (ans[1] >= 'A' && ans[1] <= 'Z' || ans[1] >= 'a' && ans[1] <= 'z') { // functions
+            while (ans[1] >= 'A' && ans[1] <= 'Z' || ans[1] >= 'a' && ans[1] <= 'z'){
+                ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+            }
+            String func = updatedExpr.substring(startPos, (int)ans[0]);
+            for(int i = 0; i < vars.size(); i++){
+                if(vars.get(i).name.equals(func)){
+                    x = vars.get(i).value;
+                    ans[2] = x;
                 }
-                return false;
             }
-
-            private float parse() {
-                nextChar();
-                float x = parseExpression();
-                if (pos < updatedExpr.length()) throw new RuntimeException("Unexpected: " + (char) ch);
-                return x;
-            }
-
-            // Grammar:
-            // expression = term | expression `+` term | expression `-` term
-            // term = factor | term `*` factor | term `/` factor
-            // factor = `+` factor | `-` factor | `(` expression `)`
-            //        | number | functionName factor | factor `^` factor
-
-            private float parseExpression() {
-                float x = parseTerm();
-                for (; ; ) {
-                    if (eat('+')) x += parseTerm(); // addition
-                    else if (eat('-')) x -= parseTerm(); // subtraction
-                    else return x;
-                }
-            }
-
-            private float parseTerm() {
-                float x = parseFactor();
-                for (; ; ) {
-                    if (eat('*')) x *= parseFactor(); // multiplication
-                    else if (eat('/')) x /= parseFactor(); // division
-                    else return x;
-                }
-            }
-
-            private float parseFactor() {
-                if (eat('+')) return parseFactor(); // unary plus
-                if (eat('-')) return -parseFactor(); // unary minus
-
-                float x = 0;
-                int startPos = this.pos;
-                if (eat('(')) { // parentheses
-                    x = parseExpression();
-                    eat(')');
-                } else if (eat('[')){ // Array brackets
-                    x = parseExpression();
-                    eat(']');
-                } else if ((ch >= '0' && ch <= '9') || ch == '.') { // numbers
-                    while ((ch >= '0' && ch <= '9') || ch == '.') nextChar();
-                    x = Float.parseFloat(updatedExpr.substring(startPos, this.pos));
-                } else if (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') { // functions
-                    while (ch >= 'A' && ch <= 'Z' || ch >= 'a' && ch <= 'z') nextChar();
-                    String func = updatedExpr.substring(startPos, this.pos);
-                    for(int i = 0; i < vars.size(); i++){
-                            if(vars.get(i).name.equals(func)){
-                                x = vars.get(i).value;
-                                return x;
+            if((int)ans[0] != updatedExpr.length() - 1){
+                if(ans[1] == '['){
+                    ans = nextChar((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                    for(int i = 0; i < arrays.size(); i++){
+                        if(arrays.get(i).name.equals(func)){
+                            ans = parseExpression((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
+                            ans[2] = arrays.get(i).values[(int)ans[2]];
+                            if(ans[1] == ']'){
+                                ans[0]++;
+                                ans[1] = (ans[0] < updatedExpr.length()) ? updatedExpr.charAt((int)ans[0]) : -1;
                             }
-                    }
-                    if(this.pos != updatedExpr.length() - 1){
-                        if(eat('[')){
-                            for(int i = 0; i < arrays.size(); i++){
-                                if(arrays.get(i).name.equals(func)){
-                                    x = arrays.get(i).values[(int)parseExpression()];
-                                    eat(']');
-                                    return x;
-                                }
-                            }
+                            return ans;
                         }
                     }
-                    x = parseFactor();
-
                 }
-                return x;
             }
-        }.parse();
+            ans = parseFactor((int)ans[0], (int)ans[1], ans[2], updatedExpr, vars, arrays);
 
+        }
+        return ans;
     }
 }
