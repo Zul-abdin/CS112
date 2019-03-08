@@ -26,7 +26,6 @@ public class Expression {
     makeVariableLists(String expr, ArrayList<Variable> vars, ArrayList<Array> arrays) {
         /** COMPLETE THIS METHOD **/
         String updatedExpr = expr.replaceAll("\\s+", "");
-        System.out.println("No Spaces: " + updatedExpr);
         String token = "";
         for (int i = 0; i < updatedExpr.length(); i++) {
             char ch = updatedExpr.charAt(i);
@@ -42,7 +41,6 @@ public class Expression {
                     }
                     if (!token.equals("")) {
                         arrays.add(newArr);
-                        System.out.println("Added " + token + " To arrays");
                         token = "";
                         break;
                     }
@@ -60,7 +58,6 @@ public class Expression {
                     }
                     if (!token.equals("")) {
                         vars.add(newVar);
-                        System.out.println("Added " + token + " To vars");
                         token = "";
                     }
                     break;
@@ -72,7 +69,6 @@ public class Expression {
         Variable newVar = new Variable(token);
         if (!token.equals("") && !vars.contains(newVar)) {
             vars.add(newVar);
-            System.out.println("Added " + token + " To vars");
         }
         /** DO NOT create new vars and arrays - they are already created before being sent in
          ** to this method - you just need to fill them in.
