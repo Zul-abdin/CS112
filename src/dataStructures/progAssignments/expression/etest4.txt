@@ -1,0 +1,10 @@
+eTvD 2.56
+UmHd 3.457
+SwfX 4.23
+LLLL 8.28
+LLL -124.23
+LL 425.356
+L -235.4
+varx 6.8
+Bartholome 6 (1,1) (3,3) (4,4) (5,5)
+JiggyDance 2 (0,1) (1,2)
