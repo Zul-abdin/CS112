@@ -64,13 +64,8 @@ public class IntLL {
         if (front == null){
             return  null;
         }
-        for(Node ptr = front; ptr.next != null; ptr = ptr.next){
-            if(ptr.next.next == null){
-                ptr.next = null;
-                break;
-            } else {
+        for(Node ptr = front; ptr != null && ptr.next != null; ptr = ptr.next){
                 ptr.next = ptr.next.next;
-            }
         }
         return front;
     }
@@ -102,7 +97,7 @@ public class IntLL {
         Node prev = null;
 
         while(pointer != null && pointer.data != target){
-            prev = pointer; //make previous pount to where current is pointing to
+            prev = pointer; //make previous point to where current is pointing to
             pointer = pointer.next; // move current ahead, one hop
         }
 
@@ -141,7 +136,6 @@ public class IntLL {
         System.out.println(search(8, Front));
         System.out.println(search(5, Front));
         System.out.println(addAfter(Front, 6, 10));
-        System.out.println(addAfter(Front, 6, 8));
         traverse(Front);
         Front = deleteEveryOther(Front);
         traverse(Front);
