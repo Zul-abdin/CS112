@@ -1,4 +1,4 @@
-package dataStructures.progAssignments.poly;
+package progAssignments.poly;
 
 import java.io.File;
 import java.io.IOException;

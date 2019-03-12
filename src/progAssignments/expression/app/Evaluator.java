@@ -1,4 +1,4 @@
-package dataStructures.progAssignments.expression.app; //revert
+package progAssignments.expression.app; //revert
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package dataStructures.progAssignments.poly;
+package progAssignments.poly;
 
 /**
  * This class implements a term of a polynomial.

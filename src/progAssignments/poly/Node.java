@@ -1,4 +1,4 @@
-package dataStructures.progAssignments.poly;
+package progAssignments.poly;
 
 /**
  * This class implements a linked list node that contains a Term instance.

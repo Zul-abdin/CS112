@@ -1,10 +1,7 @@
-package dataStructures.progAssignments.expression.app; //revert
+package progAssignments.expression.app; //revert
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.*;
-
-import dataStructures.progAssignments.expression.structures.Stack; //revert
 
 public class ExpressionParser {
 

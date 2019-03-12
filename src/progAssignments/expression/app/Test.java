@@ -1,4 +1,4 @@
-package dataStructures.progAssignments.expression.app;
+package progAssignments.expression.app;
 
 import java.util.ArrayList;
 
