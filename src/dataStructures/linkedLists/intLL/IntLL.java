@@ -122,22 +122,39 @@ public class IntLL {
         return f;
     }
 
+    public static Node deleteLastOccurrence(Node front, int item){
+        if(front == null){
+            return null;
+        }
+        Node ptr, ptrToDel = null;
+        for(ptr = front; ptr.next != null; ptr = ptr.next){
+            if(ptr.next.data == item){
+                ptrToDel = ptr;
+            }
+        }
+        if(ptrToDel == null){
+            if(front.data == item){
+                return front.next;
+            } else {
+                return front;
+            }
+        } else {
+            ptrToDel.next = ptrToDel.next.next;
+        }
+
+        return front;
+    }
+
     public static void main(String[] args) {
 
         Node Front = null;
-        Front = addToFront(6, Front);
         Front = addToFront(5, Front);
-        Front = addToFront(4, Front);
-        Front = addToFront(3, Front);
-        Front = addToFront(7, Front);
+        Front = addToFront(5, Front);
+        Front = addToFront(5, Front);
+        Front = addToFront(5, Front);
+        Front = addToFront(5, Front);
         traverse(Front);
-        Front = deleteFront(Front);
-        traverse(Front);
-        System.out.println(search(8, Front));
-        System.out.println(search(5, Front));
-        System.out.println(addAfter(Front, 6, 10));
-        traverse(Front);
-        Front = deleteEveryOther(Front);
+        Front = deleteLastOccurrence(Front, 5);
         traverse(Front);
     }
 }
