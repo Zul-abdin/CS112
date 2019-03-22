@@ -131,6 +131,34 @@ public class Tree {
 		/** COMPLETE THIS METHOD **/
 		boldRowRec(root, row);
 	}
+
+	private void removeTagRec(TagNode node, TagNode parent, String tag){
+        if(node == null) return;
+        removeTagRec(node.firstChild, node, tag);
+        removeTagRec(node.sibling, parent, tag);
+        if(node.tag.equals(tag)) {
+            if(node == parent.firstChild){
+                TagNode ptr = node.firstChild;
+                while(ptr.sibling != null){
+                    ptr = ptr.sibling;
+                }
+                ptr.sibling = node.sibling;
+                parent.firstChild = node.firstChild;
+            } else {
+                TagNode ptr = node.firstChild;
+                while(ptr.sibling != null){
+                    ptr = ptr.sibling;
+                }
+                ptr.sibling = node.sibling;
+                TagNode prevSib = parent.firstChild;
+                while(prevSib.sibling != node){
+                    prevSib = prevSib.sibling;
+                }
+                prevSib.sibling = node.firstChild;
+            }
+        }
+        removeTagRec(node.sibling, parent, tag);
+    }
 	
 	/**
 	 * Remove all occurrences of a tag from the DOM tree. If the tag is p, em, or b, all occurrences of the tag
@@ -141,6 +169,7 @@ public class Tree {
 	 */
 	public void removeTag(String tag) {
 		/** COMPLETE THIS METHOD **/
+		removeTagRec(root, null, tag);
 	}
 	
 	/**
