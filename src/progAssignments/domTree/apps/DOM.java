@@ -11,7 +11,7 @@ public class DOM {
 
 	static Scanner stdin = new Scanner(System.in);
 	static String options = "hprbdaq";
-	
+
 	static char getOption() {
 		System.out.print("\nChoose action: ");
 		System.out.print("(p)rint Tree, ");
@@ -28,37 +28,37 @@ public class DOM {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) 
-	throws IOException {
+	public static void main(String[] args)
+			throws IOException {
 		// TODO Auto-generated method stub
 		System.out.print("Enter HTML file name => ");
 		String htmlFile = stdin.nextLine();
 		Tree tree = new Tree(new Scanner(new File(htmlFile)));
 		tree.build();
-		
+
 		char option;
 		while ((option = getOption()) != 'q') {
 			System.out.println();
 			if (option == 'h') {
 				System.out.print(tree.getHTML());
 			} else if (option == 'p') {
-					tree.print();
+				tree.print();
 			} else if (option == 'r') {
 				System.out.print("\tEnter old tag => ");
-				String oldTag = stdin.next();
+				String oldTag = stdin.nextLine();
 				System.out.print("\tEnter new tag => ");
-				String newTag = stdin.next();
+				String newTag = stdin.nextLine();
 				tree.replaceTag(oldTag, newTag);
 			} else if (option == 'b') {
 				System.out.print("\tEnter row number (1..n) => ");
 				int row;
 				while (true) {
 					try {
-						row = Integer.parseInt(stdin.next());
+						row = Integer.parseInt(stdin.nextLine());
 						if (row > 0) {
 							break;
 						} else {
@@ -75,12 +75,12 @@ public class DOM {
 				}
 			} else if (option == 'd') {
 				System.out.print("\tEnter tag to remove => ");
-				tree.removeTag(stdin.next().trim());
+				tree.removeTag(stdin.nextLine().trim());
 			} else if (option == 'a') {
 				System.out.print("\tEnter text to tag => ");
-				String text = stdin.next().trim();
+				String text = stdin.nextLine().trim();
 				System.out.print("\tEnter tag => ");
-				String tag = stdin.next().trim();
+				String tag = stdin.nextLine().trim();
 				tree.addTag(text, tag);
 			}
 		}

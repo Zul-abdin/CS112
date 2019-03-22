@@ -1,5 +1,7 @@
 package progAssignments.domTree.structures; //revert
 
+import javax.swing.text.html.HTML;
+import javax.swing.tree.TreeNode;
 import java.util.*;
 
 /**
@@ -28,6 +30,23 @@ public class Tree {
 		this.sc = sc;
 		root = null;
 	}
+
+	private void add(TagNode node, TagNode parent){
+	    if(root == null){
+	        root = node;
+	        return;
+        }
+        TagNode firstChild = parent.firstChild;
+        if(firstChild == null){
+            parent.firstChild = node;
+            return;
+        }
+        TagNode ptr = firstChild;
+        while(ptr.sibling != null){
+            ptr = ptr.sibling;
+        }
+        ptr.sibling = node;
+    }
 	
 	/**
 	 * Builds the DOM tree from input HTML file, through scanner passed
@@ -37,6 +56,28 @@ public class Tree {
 	 */
 	public void build() {
 		/** COMPLETE THIS METHOD **/
+		TagNode curr = root;
+		TagNode prev = null;
+		TagNode parent;
+		Stack<TagNode> stk = new Stack<>();
+		while(sc.hasNextLine()){
+		    String currLine = sc.nextLine();
+		    if(currLine.charAt(0) == '<' && currLine.charAt(1) != '/'){
+		    	TagNode node = new TagNode(currLine.substring(1, currLine.length() - 1), null, null);
+		    	try { parent = stk.peek(); } catch (Exception e){
+		    	    parent = null;
+                }
+		    	add(node, parent);
+		        stk.push(node);
+            } else if(currLine.charAt(0) == '<' && currLine.charAt(1) == '/'){
+		        stk.pop();
+            } else {
+                TagNode node = new TagNode(currLine, null, null);
+                parent = stk.peek();
+                add(node, parent);
+
+            }
+        }
 	}
 	
 	/**
@@ -45,9 +86,39 @@ public class Tree {
 	 * @param oldTag Old tag
 	 * @param newTag Replacement tag
 	 */
+
+	private void replaceTagRec(TagNode node, String oldTag, String newTag){
+	    if(node == null) return;
+	    replaceTagRec(node.firstChild, oldTag, newTag);
+	    if(node.tag.equals(oldTag)){
+	        node.tag = newTag;
+        }
+        replaceTagRec(node.sibling, oldTag, newTag);
+    }
+
 	public void replaceTag(String oldTag, String newTag) {
 		/** COMPLETE THIS METHOD **/
+        replaceTagRec(root, oldTag, newTag);
 	}
+
+    private void boldRowRec(TagNode node, int row){
+        if(node == null) return;
+        boldRowRec(node.firstChild, row);
+        if(node.tag.equals("table")){
+            node = node.firstChild;
+            int currRow = 1;
+            while(currRow != row){
+                node = node.sibling;
+                currRow++;
+            }
+            node = node.firstChild;
+            for(TagNode ptr = node; ptr != null; ptr = ptr.sibling){
+                TagNode temp = ptr.firstChild;
+                ptr.firstChild = new TagNode("b", temp, null);
+            }
+        }
+        boldRowRec(node.sibling, row);
+    }
 	
 	/**
 	 * Boldfaces every column of the given row of the table in the DOM tree. The boldface (b)
@@ -55,8 +126,10 @@ public class Tree {
 	 * 
 	 * @param row Row to bold, first row is numbered 1 (not 0).
 	 */
+
 	public void boldRow(int row) {
 		/** COMPLETE THIS METHOD **/
+		boldRowRec(root, row);
 	}
 	
 	/**
