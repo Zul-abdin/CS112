@@ -137,24 +137,56 @@ public class Tree {
         removeTagRec(node.firstChild, node, tag);
         removeTagRec(node.sibling, parent, tag);
         if(node.tag.equals(tag)) {
-            if(node == parent.firstChild){
-                TagNode ptr = node.firstChild;
-                while(ptr.sibling != null){
-                    ptr = ptr.sibling;
+        	if(tag.equals("ol") || tag.equals("ul")){
+                if (node == parent.firstChild) {
+                    TagNode ptr = node.firstChild;
+                    for(TagNode liPtr = ptr; liPtr != null; liPtr = liPtr.sibling){
+                        if(liPtr.tag.equals("li")){
+                            liPtr.tag = "p";
+                        }
+                    }
+                    while (ptr.sibling != null) {
+                        ptr = ptr.sibling;
+                    }
+                    ptr.sibling = node.sibling;
+                    parent.firstChild = node.firstChild;
+                } else {
+                    TagNode ptr = node.firstChild;
+                    for(TagNode liPtr = ptr; liPtr != null; liPtr = liPtr.sibling){
+                        if(liPtr.tag.equals("li")){
+                            liPtr.tag = "p";
+                        }
+                    }
+                    while (ptr.sibling != null) {
+                        ptr = ptr.sibling;
+                    }
+                    ptr.sibling = node.sibling;
+                    TagNode prevSib = parent.firstChild;
+                    while (prevSib.sibling != node) {
+                        prevSib = prevSib.sibling;
+                    }
+                    prevSib.sibling = node.firstChild;
                 }
-                ptr.sibling = node.sibling;
-                parent.firstChild = node.firstChild;
             } else {
-                TagNode ptr = node.firstChild;
-                while(ptr.sibling != null){
-                    ptr = ptr.sibling;
+                if (node == parent.firstChild) {
+                    TagNode ptr = node.firstChild;
+                    while (ptr.sibling != null) {
+                        ptr = ptr.sibling;
+                    }
+                    ptr.sibling = node.sibling;
+                    parent.firstChild = node.firstChild;
+                } else {
+                    TagNode ptr = node.firstChild;
+                    while (ptr.sibling != null) {
+                        ptr = ptr.sibling;
+                    }
+                    ptr.sibling = node.sibling;
+                    TagNode prevSib = parent.firstChild;
+                    while (prevSib.sibling != node) {
+                        prevSib = prevSib.sibling;
+                    }
+                    prevSib.sibling = node.firstChild;
                 }
-                ptr.sibling = node.sibling;
-                TagNode prevSib = parent.firstChild;
-                while(prevSib.sibling != node){
-                    prevSib = prevSib.sibling;
-                }
-                prevSib.sibling = node.firstChild;
             }
         }
         removeTagRec(node.sibling, parent, tag);
