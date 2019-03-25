@@ -214,8 +214,13 @@ public class Tree {
             TagNode tagTemp = node.sibling;
             String strTemp = node.tag;
             int ind = lowNode.indexOf(lowWord);
-            //Word is last
-            if(ind + word.length() == lowNode.length()){
+            //Only text is word
+            if(ind == 0 && ind + word.length() == lowNode.length()){
+                node.tag = tag;
+                node.firstChild = new TagNode(strTemp.substring(0, lowNode.length()), null, null);
+                node.sibling = tagTemp;
+                //Word is last
+            } else if(ind + word.length() == lowNode.length()){
                 node.tag = strTemp.substring(0, ind);
                 TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length()), null, null);
                 node.sibling = new TagNode(tag, newWordPunc, tagTemp);
