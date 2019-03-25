@@ -135,7 +135,6 @@ public class Tree {
 	private void removeTagRec(TagNode node, TagNode parent, String tag){
         if(node == null) return;
         removeTagRec(node.firstChild, node, tag);
-        removeTagRec(node.sibling, parent, tag);
         if(node.tag.equals(tag)) {
         	if(tag.equals("ol") || tag.equals("ul")){
                 if (node == parent.firstChild) {
@@ -203,6 +202,84 @@ public class Tree {
 		/** COMPLETE THIS METHOD **/
 		removeTagRec(root, null, tag);
 	}
+
+	private void addTagRec(TagNode node, String word, String tag){
+        if(node == null) return;
+        addTagRec(node.firstChild, word, tag);
+        addTagRec(node.sibling, word, tag);
+
+        String lowWord = word.toLowerCase();
+        String lowNode = node.tag.toLowerCase();
+        if(lowNode.contains(lowWord)){
+            TagNode tagTemp = node.sibling;
+            String strTemp = node.tag;
+            int ind = lowNode.indexOf(lowWord);
+            //Word is last
+            if(ind + word.length() == lowNode.length()){
+                node.tag = strTemp.substring(0, ind);
+                TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length()), null, null);
+                node.sibling = new TagNode(tag, newWordPunc, tagTemp);
+            } else {
+                char ch = lowNode.charAt(ind + word.length());
+                if (ind == 0 || lowNode.charAt(ind - 1) == ' ') {
+                    switch (ch) {
+                        case '.':
+                        case ',':
+                        case '?':
+                        case '!':
+                        case ':':
+                        case ';':
+                            //Node is only word
+                            if (ind == 0 && word.length() + 1 == lowNode.length()) {
+                                node.tag = tag;
+                                node.firstChild = new TagNode(strTemp.substring(0, lowNode.length()), null, null);
+                                node.sibling = tagTemp;
+                                //Node has something after punc
+                            } else if (lowNode.charAt(ind + word.length() + 1) != ' ') {
+                                break;
+                                //Word is last
+                            } else if (ind + word.length() + 1 == lowNode.length()) {
+                                node.tag = strTemp.substring(0, ind);
+                                TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length() + 1), null, null);
+                                node.sibling = new TagNode(tag, newWordPunc, tagTemp);
+                                //Node is first word
+                            } else if (ind == 0) {
+                                node.tag = tag;
+                                TagNode newWordPunc = new TagNode(strTemp.substring(0, word.length() + 1), null, null);
+                                TagNode postWordPunc = new TagNode(strTemp.substring(word.length() + 1), null, tagTemp);
+                                node.firstChild = newWordPunc;
+                                node.sibling = postWordPunc;
+                                //Node is in middle
+                            } else {
+                                node.tag = strTemp.substring(0, ind);
+                                TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length() + 1), null, null);
+                                TagNode postWordPunc = new TagNode(strTemp.substring(ind + word.length() + 1), null, tagTemp);
+                                node.sibling = new TagNode(tag, newWordPunc, postWordPunc);
+                            }
+                            break;
+                        case ' ':
+                            //Node is first word
+                            if (ind == 0) {
+                                node.tag = tag;
+                                TagNode newWordPunc = new TagNode(strTemp.substring(0, word.length()), null, null);
+                                TagNode postWordPunc = new TagNode(strTemp.substring(word.length()), null, tagTemp);
+                                node.firstChild = newWordPunc;
+                                node.sibling = postWordPunc;
+                                //Node is in the middle
+                            } else {
+                                node.tag = strTemp.substring(0, ind);
+                                TagNode newWord = new TagNode(strTemp.substring(ind, ind + word.length()), null, null);
+                                TagNode postWord = new TagNode(strTemp.substring(ind + word.length()), null, tagTemp);
+                                node.sibling = new TagNode(tag, newWord, postWord);
+                            }
+                            break;
+                        default:
+                    }
+
+                }
+            }
+        }
+    }
 	
 	/**
 	 * Adds a tag around all occurrences of a word in the DOM tree.
@@ -212,6 +289,7 @@ public class Tree {
 	 */
 	public void addTag(String word, String tag) {
 		/** COMPLETE THIS METHOD **/
+		addTagRec(root, word, tag);
 	}
 	
 	/**
