@@ -1,29 +1,27 @@
 package progAssignments.domTree.structures; //revert
 
-import javax.swing.text.html.HTML;
-import javax.swing.tree.TreeNode;
 import java.util.*;
 
 /**
  * This class implements an HTML DOM Tree. Each node of the tree is a TagNode, with fields for
  * tag/text, first child and sibling.
- * 
+ *
  */
 public class Tree {
-	
+
 	/**
 	 * Root node
 	 */
 	TagNode root=null;
-	
+
 	/**
 	 * Scanner used to read input HTML file when building the tree
 	 */
 	Scanner sc;
-	
+
 	/**
 	 * Initializes this tree object with scanner for input HTML file
-	 * 
+	 *
 	 * @param sc Scanner for input HTML file
 	 */
 	public Tree(Scanner sc) {
@@ -47,11 +45,11 @@ public class Tree {
         }
         ptr.sibling = node;
     }
-	
+
 	/**
 	 * Builds the DOM tree from input HTML file, through scanner passed
-	 * in to the constructor and stored in the sc field of this object. 
-	 * 
+	 * in to the constructor and stored in the sc field of this object.
+	 *
 	 * The root of the tree that is built is referenced by the root field of this object.
 	 */
 	public void build() {
@@ -79,10 +77,10 @@ public class Tree {
             }
         }
 	}
-	
+
 	/**
 	 * Replaces all occurrences of an old tag in the DOM tree with a new tag
-	 * 
+	 *
 	 * @param oldTag Old tag
 	 * @param newTag Replacement tag
 	 */
@@ -119,11 +117,11 @@ public class Tree {
         }
         boldRowRec(node.sibling, row);
     }
-	
+
 	/**
 	 * Boldfaces every column of the given row of the table in the DOM tree. The boldface (b)
 	 * tag appears directly under the td tag of every column of this row.
-	 * 
+	 *
 	 * @param row Row to bold, first row is numbered 1 (not 0).
 	 */
 
@@ -190,12 +188,12 @@ public class Tree {
         }
         removeTagRec(node.sibling, parent, tag);
     }
-	
+
 	/**
 	 * Remove all occurrences of a tag from the DOM tree. If the tag is p, em, or b, all occurrences of the tag
-	 * are removed. If the tag is ol or ul, then All occurrences of such a tag are removed from the tree, and, 
-	 * in addition, all the li tags immediately under the removed tag are converted to p tags. 
-	 * 
+	 * are removed. If the tag is ol or ul, then All occurrences of such a tag are removed from the tree, and,
+	 * in addition, all the li tags immediately under the removed tag are converted to p tags.
+	 *
 	 * @param tag Tag to be removed, can be p, em, b, ol, or ul
 	 */
 	public void removeTag(String tag) {
@@ -203,28 +201,35 @@ public class Tree {
 		removeTagRec(root, null, tag);
 	}
 
-	private void addTagRec(TagNode node, String word, String tag){
+	private void addTagRec(TagNode node, TagNode parent, String word, String tag){
         if(node == null) return;
-        addTagRec(node.firstChild, word, tag);
-        addTagRec(node.sibling, word, tag);
+        if(parent != null) {
+            if (parent.tag.equals(tag)) return;
+        }
+
+        addTagRec(node.firstChild, node, word, tag);
+
+        boolean ran = false;
 
         String lowWord = word.toLowerCase();
         String lowNode = node.tag.toLowerCase();
-        if(lowNode.contains(lowWord)){
+        if(lowNode.contains(lowWord)) {
             TagNode tagTemp = node.sibling;
             String strTemp = node.tag;
             int ind = lowNode.indexOf(lowWord);
             //Only text is word
-            if(ind == 0 && ind + word.length() == lowNode.length()){
+            if (ind == 0 && ind + word.length() == lowNode.length()) {
                 node.tag = tag;
                 node.firstChild = new TagNode(strTemp.substring(0, lowNode.length()), null, null);
                 node.sibling = tagTemp;
+                ran = true;
                 //Word is last
-            } else if(ind + word.length() == lowNode.length()){
+            } else if (ind + word.length() == lowNode.length()) {
                 node.tag = strTemp.substring(0, ind);
                 TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length()), null, null);
                 node.sibling = new TagNode(tag, newWordPunc, tagTemp);
-            } else {
+                ran = true;
+            } else if (ind == 0 || lowNode.charAt(ind - 1) == ' ') {
                 char ch = lowNode.charAt(ind + word.length());
                 if (ind == 0 || lowNode.charAt(ind - 1) == ' ') {
                     switch (ch) {
@@ -239,14 +244,20 @@ public class Tree {
                                 node.tag = tag;
                                 node.firstChild = new TagNode(strTemp.substring(0, lowNode.length()), null, null);
                                 node.sibling = tagTemp;
+                                ran = true;
                                 //Node has something after punc
+                            } else if(ind + word.length() == lowNode.length() - 1){
+                                break;
+
                             } else if (lowNode.charAt(ind + word.length() + 1) != ' ') {
+                                ran = true;
                                 break;
                                 //Word is last
                             } else if (ind + word.length() + 1 == lowNode.length()) {
                                 node.tag = strTemp.substring(0, ind);
                                 TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length() + 1), null, null);
                                 node.sibling = new TagNode(tag, newWordPunc, tagTemp);
+                                ran = true;
                                 //Node is first word
                             } else if (ind == 0) {
                                 node.tag = tag;
@@ -254,12 +265,14 @@ public class Tree {
                                 TagNode postWordPunc = new TagNode(strTemp.substring(word.length() + 1), null, tagTemp);
                                 node.firstChild = newWordPunc;
                                 node.sibling = postWordPunc;
+                                ran = true;
                                 //Node is in middle
                             } else {
                                 node.tag = strTemp.substring(0, ind);
                                 TagNode newWordPunc = new TagNode(strTemp.substring(ind, ind + word.length() + 1), null, null);
                                 TagNode postWordPunc = new TagNode(strTemp.substring(ind + word.length() + 1), null, tagTemp);
                                 node.sibling = new TagNode(tag, newWordPunc, postWordPunc);
+                                ran = true;
                             }
                             break;
                         case ' ':
@@ -270,12 +283,14 @@ public class Tree {
                                 TagNode postWordPunc = new TagNode(strTemp.substring(word.length()), null, tagTemp);
                                 node.firstChild = newWordPunc;
                                 node.sibling = postWordPunc;
+                                ran = true;
                                 //Node is in the middle
                             } else {
                                 node.tag = strTemp.substring(0, ind);
                                 TagNode newWord = new TagNode(strTemp.substring(ind, ind + word.length()), null, null);
                                 TagNode postWord = new TagNode(strTemp.substring(ind + word.length()), null, tagTemp);
                                 node.sibling = new TagNode(tag, newWord, postWord);
+                                ran = true;
                             }
                             break;
                         default:
@@ -283,33 +298,102 @@ public class Tree {
 
                 }
             }
+            if (!ran) {
+                String word1 = " " + lowWord + " ";
+                String word2 = " " + lowWord + "! ";
+                String word3 = " " + lowWord + ";  ";
+                String word4 = " " + lowWord + ":  ";
+                String word5 = " " + lowWord + ",  ";
+                String word6 = " " + lowWord + "? ";
+                String word7 = " " + lowWord + ". ";
+                int wordex = -1;
+
+                int index = Integer.MAX_VALUE;
+                if (lowNode.contains(word1)) {
+                    index = lowNode.indexOf(word1);
+                    wordex = 0;
+                }
+                if (lowNode.contains(word2) && lowNode.indexOf(word2) < index) {
+                    index = lowNode.indexOf(word2);
+                    wordex = 1;
+                }
+                if (lowNode.contains(word3) && lowNode.indexOf(word3) < index) {
+                    index = lowNode.indexOf(word3);
+                    wordex = 1;
+                }
+                if (lowNode.contains(word4) && lowNode.indexOf(word4) < index) {
+                    index = lowNode.indexOf(word4);
+                    wordex = 1;
+                }
+                if (lowNode.contains(word5) && lowNode.indexOf(word5) < index) {
+                    index = lowNode.indexOf(word5);
+                    wordex = 1;
+                }
+                if (lowNode.contains(word6) && lowNode.indexOf(word6) < index) {
+                    index = lowNode.indexOf(word6);
+                    wordex = 1;
+                }
+                if (lowNode.contains(word7) && lowNode.indexOf(word7) < index) {
+                    index = lowNode.indexOf(word7);
+                    wordex = 1;
+                }
+                try {
+                    if (index != Integer.MAX_VALUE) {
+                        index++;
+                        if (wordex == 0) {
+                            node.tag = strTemp.substring(0, index);
+                            TagNode newWord = new TagNode(strTemp.substring(index, index + word.length()), null, null);
+                            TagNode postWord = new TagNode(strTemp.substring(index + word.length()), null, tagTemp);
+                            node.sibling = new TagNode(tag, newWord, postWord);
+                        } else {
+                            node.tag = strTemp.substring(0, index);
+                            TagNode newWordPunc = new TagNode(strTemp.substring(index, index + word.length() + 1), null, null);
+                            TagNode postWordPunc = new TagNode(strTemp.substring(index + word.length() + 1), null, tagTemp);
+                            node.sibling = new TagNode(tag, newWordPunc, postWordPunc);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    if (wordex == 0) {
+                        node.tag = strTemp.substring(0, index);
+                        TagNode newWordPunc = new TagNode(strTemp.substring(index, index + word.length()), null, null);
+                        node.sibling = new TagNode(tag, newWordPunc, tagTemp);
+
+                    } else {
+                        node.tag = strTemp.substring(0, index);
+                        TagNode newWordPunc = new TagNode(strTemp.substring(index, index + word.length() + 1), null, null);
+                        node.sibling = new TagNode(tag, newWordPunc, tagTemp);
+                    }
+                }
+            }
         }
+        addTagRec(node.sibling, parent, word, tag);
     }
-	
+
 	/**
 	 * Adds a tag around all occurrences of a word in the DOM tree.
-	 * 
+	 *
 	 * @param word Word around which tag is to be added
 	 * @param tag Tag to be added
 	 */
 	public void addTag(String word, String tag) {
 		/** COMPLETE THIS METHOD **/
-		addTagRec(root, word, tag);
+		addTagRec(root, null, word, tag);
 	}
-	
+
 	/**
 	 * Gets the HTML represented by this DOM tree. The returned string includes
 	 * new lines, so that when it is printed, it will be identical to the
 	 * input file from which the DOM tree was built.
-	 * 
-	 * @return HTML string, including new lines. 
+	 *
+	 * @return HTML string, including new lines.
 	 */
 	public String getHTML() {
 		StringBuilder sb = new StringBuilder();
 		getHTML(root, sb);
 		return sb.toString();
 	}
-	
+
 	private void getHTML(TagNode root, StringBuilder sb) {
 		for (TagNode ptr=root; ptr != null;ptr=ptr.sibling) {
 			if (ptr.firstChild == null) {
@@ -322,19 +406,19 @@ public class Tree {
 				getHTML(ptr.firstChild, sb);
 				sb.append("</");
 				sb.append(ptr.tag);
-				sb.append(">\n");	
+				sb.append(">\n");
 			}
 		}
 	}
-	
+
 	/**
-	 * Prints the DOM tree. 
+	 * Prints the DOM tree.
 	 *
 	 */
 	public void print() {
 		print(root, 1);
 	}
-	
+
 	private void print(TagNode root, int level) {
 		for (TagNode ptr=root; ptr != null;ptr=ptr.sibling) {
 			for (int i=0; i < level-1; i++) {
