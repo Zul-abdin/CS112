@@ -1,5 +1,7 @@
 package progAssignments.littleSearchEngine.sEngine;
 
+import progAssignments.expression.app.Array;
+
 import java.io.*;
 import java.util.*;
 
@@ -38,13 +40,27 @@ public class LittleSearchEngine {
 	 * @return Hash table of keywords in the given document, each associated with an Occurrence object
 	 * @throws FileNotFoundException If the document file is not found on disk
 	 */
-	public HashMap<String,Occurrence> loadKeywordsFromDocument(String docFile) 
+	public HashMap<String,Occurrence> loadKeywordsFromDocument(String docFile)
 	throws FileNotFoundException {
 		/** COMPLETE THIS METHOD **/
+		if(docFile == null) throw new FileNotFoundException();
+		HashMap<String, Occurrence> hm = new HashMap<>();
+		Scanner sc = new Scanner(new File(docFile));
+		while(sc.hasNext()){
+		    String key = getKeyword(sc.next());
+		    if(key != null){
+		        if(hm.containsKey(key)){
+		            hm.get(key).frequency++;
+                } else {
+		            Occurrence o = new Occurrence(docFile, 1);
+		            hm.put(key, o);
+                }
+            }
+        }
 		
 		// following line is a placeholder to make the program compile
 		// you should modify it as needed when you write your code
-		return null;
+		return hm;
 	}
 	
 	/**
@@ -79,11 +95,49 @@ public class LittleSearchEngine {
 	 */
 	public String getKeyword(String word) {
 		/** COMPLETE THIS METHOD **/
-		
-		// following line is a placeholder to make the program compile
-		// you should modify it as needed when you write your code
-		return null;
+		String s = removeTrailPunc(word);
+		if(isKeyword(s)){
+		    return s.toLowerCase();
+        } else {
+		    return null;
+        }
+
 	}
+
+	private String removeTrailPunc(String s){
+	    if(s == null) return null;
+
+	    while(!Character.isLetter(s.charAt(s.length() - 1))){
+	        if(s.length() == 1) return null;
+	        char ch = s.charAt(s.length() - 1);
+	        boolean remPunc = false;
+	        switch (ch) {
+                case '.':
+                case ',':
+                case '?':
+                case ':':
+                case ';':
+                case '!':
+                    s = s.substring(0, s.length() - 1);
+                    remPunc = true;
+                    break;
+                default:
+                    break;
+            }
+            if(!remPunc) return null;
+        }
+        return s;
+    }
+
+    private boolean isKeyword(String s){
+	    if(s == null) return false;
+        for(int i = 0; i < s.length(); i++){
+            if(!Character.isLetter(s.charAt(i))){
+                return false;
+            }
+        }
+        return !(noiseWords.contains(s));
+    }
 	
 	/**
 	 * Inserts the last occurrence in the parameter list in the correct position in the
@@ -98,10 +152,40 @@ public class LittleSearchEngine {
 	 */
 	public ArrayList<Integer> insertLastOccurrence(ArrayList<Occurrence> occs) {
 		/** COMPLETE THIS METHOD **/
-		
+		if(occs.size() < 2) return null;
+        ArrayList<Integer> mids = new ArrayList<>();
+        int l = 0, r = occs.size() - 2, target = occs.get(occs.size() - 1).frequency;
+        int midIndex = 0, midNum = 0;
+        Occurrence lastOc = occs.get(occs.size() - 1);
+
+        while(l <= r){
+            midIndex = (l + r) / 2;
+            mids.add(midIndex);
+            midNum = occs.get(midIndex).frequency;
+
+            if(midNum == target){
+                occs.add(midIndex, lastOc);
+
+            } else if (midNum < target){
+                l = midIndex + 1;
+
+            } else {
+                r = midIndex - 1;
+            }
+        }
+
+        if(midNum > target){
+            occs.add(midIndex + 1, lastOc);
+        } else {
+            occs.add(midIndex, lastOc);
+        }
+
+        occs.remove(occs.size() - 1);
+
+
 		// following line is a placeholder to make the program compile
 		// you should modify it as needed when you write your code
-		return null;
+		return mids;
 	}
 	
 	/**
