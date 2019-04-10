@@ -1,2 +1,2 @@
-AliceCh1.txt
-WowCh1.txt
+C:\Users\Zain\IdeaProjects\CS112\src\progAssignments\littleSearchEngine\AliceCh1.txt
+C:\Users\Zain\IdeaProjects\CS112\src\progAssignments\littleSearchEngine\WowCh1.txt

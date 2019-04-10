@@ -1,7 +1,5 @@
 package progAssignments.littleSearchEngine.sEngine;
 
-import progAssignments.expression.app.Array;
-
 import java.io.*;
 import java.util.*;
 
@@ -74,8 +72,18 @@ public class LittleSearchEngine {
 	 */
 	public void mergeKeywords(HashMap<String,Occurrence> kws) {
 		/** COMPLETE THIS METHOD **/
+		for(String key: kws.keySet()){
+		    if(keywordsIndex.containsKey(key)){
+		        keywordsIndex.get(key).add(kws.get(key));
+		        insertLastOccurrence(keywordsIndex.get(key));
+            } else {
+		        ArrayList<Occurrence> o = new ArrayList<>();
+		        o.add(kws.get(key));
+		        keywordsIndex.put(key, o);
+            }
+        }
 	}
-	
+
 	/**
 	 * Given a word, returns it as a keyword if it passes the keyword test,
 	 * otherwise returns null. A keyword is any word that, after being stripped of any
@@ -97,7 +105,7 @@ public class LittleSearchEngine {
 		/** COMPLETE THIS METHOD **/
 		String s = removeTrailPunc(word);
 		if(isKeyword(s)){
-		    return s.toLowerCase();
+		    return s;
         } else {
 		    return null;
         }
@@ -126,7 +134,7 @@ public class LittleSearchEngine {
             }
             if(!remPunc) return null;
         }
-        return s;
+        return s.toLowerCase();
     }
 
     private boolean isKeyword(String s){
@@ -165,6 +173,8 @@ public class LittleSearchEngine {
 
             if(midNum == target){
                 occs.add(midIndex, lastOc);
+                occs.remove(occs.size() - 1);
+                break;
 
             } else if (midNum < target){
                 l = midIndex + 1;
@@ -198,7 +208,7 @@ public class LittleSearchEngine {
 	 * @param noiseWordsFile Name of file that has a list of noise words, one noise word per line
 	 * @throws FileNotFoundException If there is a problem locating any of the input files on disk
 	 */
-	public void makeIndex(String docsFile, String noiseWordsFile) 
+	public void makeIndex(String docsFile, String noiseWordsFile)
 	throws FileNotFoundException {
 		// load noise words to hash table
 		Scanner sc = new Scanner(new File(noiseWordsFile));
@@ -239,10 +249,44 @@ public class LittleSearchEngine {
 	 */
 	public ArrayList<String> top5search(String kw1, String kw2) {
 		/** COMPLETE THIS METHOD **/
-		
-		// following line is a placeholder to make the program compile
+		ArrayList<String> result = new ArrayList<>();
+        ArrayList<Occurrence> complete = new ArrayList<>(keywordsIndex.get(kw1));
+        complete.addAll(keywordsIndex.get(kw2));
+
+        int s = complete.size();
+        for (int i = 0; i < s - 1; i++) {
+            // Find the maximum element in unsorted array
+            int max = i;
+            for (int j = i + 1; j < s; j++)
+                if (complete.get(j).frequency > complete.get(max).frequency) max = j;
+
+            // Swap the found maximum element with the first
+            // element
+            Occurrence temp = complete.get(max);
+            complete.add(max, complete.get(i));
+            complete.remove(max + 1);
+            complete.add(i, temp);
+            complete.remove(i + 1);
+        }
+
+        for(int i = 0; i < complete.size(); i++){
+            for(int j = i + 1; j < complete.size(); j++){
+                if(complete.get(j).document.equals(complete.get(i).document)) complete.remove(j);
+            }
+        }
+        complete.trimToSize();
+
+        while(complete.size() > 5){
+            complete.remove(5);
+        }
+
+        for(Occurrence o: complete){
+            result.add(o.document);
+        }
+
+        // following line is a placeholder to make the program compile
 		// you should modify it as needed when you write your code
-		return null;
+		return result;
 	
 	}
 }
