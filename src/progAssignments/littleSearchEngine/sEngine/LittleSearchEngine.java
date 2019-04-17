@@ -174,9 +174,9 @@ public class LittleSearchEngine {
             if(midNum == target){
                 occs.add(midIndex, lastOc);
                 occs.remove(occs.size() - 1);
-                break;
+                return mids;
 
-            } else if (midNum < target){
+            } else if (midNum > target){
                 l = midIndex + 1;
 
             } else {
@@ -250,8 +250,16 @@ public class LittleSearchEngine {
 	public ArrayList<String> top5search(String kw1, String kw2) {
 		/** COMPLETE THIS METHOD **/
 		ArrayList<String> result = new ArrayList<>();
-        ArrayList<Occurrence> complete = new ArrayList<>(keywordsIndex.get(kw1));
-        complete.addAll(keywordsIndex.get(kw2));
+        ArrayList<Occurrence> complete = new ArrayList<>();
+        if(keywordsIndex.containsKey(kw1)) {
+            complete.addAll(keywordsIndex.get(kw1));
+        }
+        if(keywordsIndex.containsKey(kw2)) {
+            complete.addAll(keywordsIndex.get(kw2));
+        }
+        if(complete.size() == 0){
+            return null;
+        }
 
         int s = complete.size();
         for (int i = 0; i < s - 1; i++) {
