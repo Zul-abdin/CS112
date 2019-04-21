@@ -4,7 +4,7 @@ Rutgers Spring 2019
 
 #### Syllabus Completion
 - [x] Linear Structures
-- [ ] Search Structures
-- [ ] Binary Tree and Applications
+- [x] Search Structures
+- [x] Binary Tree and Applications
 - [ ] Graphs
 - [ ] Sorting
