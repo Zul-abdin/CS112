@@ -134,7 +134,7 @@ public class MinHeap<T extends Comparable<T>> implements Iterable<T> {
      * Returns (but does not remove) the min item in the heap.
      * 
      * @return Item at top of heap.
-     * @throws NoSuchElementExcepton If heap is empty.
+     * @throws NoSuchElementException If heap is empty.
      */
     public T getMin() 
     throws NoSuchElementException {
