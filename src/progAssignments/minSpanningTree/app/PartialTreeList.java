@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import progAssignments.minSpanningTree.structures.Arc; //revert
-import progAssignments.minSpanningTree.structures.Graph; //revert
-import progAssignments.minSpanningTree.structures.PartialTree; //revert
-import progAssignments.minSpanningTree.structures.Vertex; //revert
+import progAssignments.minSpanningTree.structures.*;
 
 /**
  * Stores partial trees in a circular linked list
@@ -86,8 +83,21 @@ public class PartialTreeList implements Iterable<PartialTree> {
 	public static PartialTreeList initialize(Graph graph) {
 	
 		/* COMPLETE THIS METHOD */
-		
-		return null;
+
+		PartialTreeList result = new PartialTreeList();
+
+		for(int i = 0; i < graph.vertices.length; i++){
+			Vertex curr = graph.vertices[i];
+			PartialTree partialTree = new PartialTree(curr);
+			for(Vertex.Neighbor ptr = curr.neighbors; ptr != null; ptr = ptr.next){
+				Arc edge = new Arc(curr, ptr.vertex, ptr.weight);
+				MinHeap<Arc> priorityQ = partialTree.getArcs();
+				priorityQ.insert(edge);
+			}
+			result.append(partialTree);
+		}
+
+		return result;
 	}
 	
 	/**
@@ -101,7 +111,31 @@ public class PartialTreeList implements Iterable<PartialTree> {
 		
 		/* COMPLETE THIS METHOD */
 
-		return null;
+		ArrayList<Arc> result = new ArrayList<>();
+
+		while(ptlist.size() != 1){
+			PartialTree currPT = ptlist.remove(); //Step 3
+			MinHeap<Arc> currPQ = currPT.getArcs(); //Step 3
+			Arc currArc = currPQ.deleteMin(); //step 4
+			while(currArc.getv2().getRoot().name.equals(currArc.getv1().getRoot().name)){
+				currArc = currPQ.deleteMin();
+			}
+			result.add(currArc);
+
+			Vertex rootPTY = currArc.getv2().getRoot();
+			PartialTree ptY = null;
+			for(PartialTree pt2: ptlist){
+				if(pt2.getRoot().name.equals(rootPTY.name)){
+						ptY = pt2;
+				}
+			}
+			currPT.merge(ptY);
+			ptlist.removeTreeContaining(rootPTY);
+			ptlist.append(currPT);
+			ptlist.size--;
+		}
+
+		return result;
 	}
 	
     /**
@@ -137,8 +171,28 @@ public class PartialTreeList implements Iterable<PartialTree> {
     public PartialTree removeTreeContaining(Vertex vertex) 
     throws NoSuchElementException {
     		/* COMPLETE THIS METHOD */
-    	
-    		return null;
+		Node ptr = rear;
+		do{
+			PartialTree partialTreeToDel = ptr.next.tree;
+			MinHeap<Arc> priorityQ = new MinHeap<>(ptr.next.tree.getArcs());
+
+			while(!priorityQ.isEmpty()){
+				Arc curr = priorityQ.deleteMin();
+				if(curr.getv1().name.equals(vertex.name)){
+					ptr.next = ptr.next.next;
+
+					if(rear.tree.getRoot().name.equals(vertex.name)){
+						rear = rear.next;
+					}
+
+					return partialTreeToDel;
+				}
+			}
+
+			ptr = ptr.next;
+		} while (ptr != rear);
+
+    		throw new NoSuchElementException();
      }
     
     /**
