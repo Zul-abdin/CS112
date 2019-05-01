@@ -114,25 +114,26 @@ public class PartialTreeList implements Iterable<PartialTree> {
 		ArrayList<Arc> result = new ArrayList<>();
 
 		while(ptlist.size() != 1){
-			PartialTree currPT = ptlist.remove(); //Step 3
-			MinHeap<Arc> currPQ = currPT.getArcs(); //Step 3
-			Arc currArc = currPQ.deleteMin(); //step 4
-			while(currArc.getv2().getRoot().equals(currPT.getRoot())){
-				currArc = currPQ.deleteMin();
+			PartialTree ptX = ptlist.remove(); //Step 3
+			MinHeap<Arc> pqX = ptX.getArcs(); //Step 3
+			Arc arcX = pqX.deleteMin(); //step 4
+			while(arcX.getv2().getRoot().equals(ptX.getRoot())){
+				arcX = pqX.deleteMin();
 			}
-			result.add(currArc);
+			result.add(arcX);
 
-			Vertex rootPTY = currArc.getv2().getRoot();
+			Vertex rootPTY = arcX.getv2().getRoot();
 			PartialTree ptY = null;
 			for(PartialTree pt2: ptlist){
 				if(pt2.getRoot().equals(rootPTY)){
 						ptY = pt2;
+						break;
 				}
 			}
-			currPT.merge(ptY);
+			if(ptY == null) throw new NoSuchElementException("Could Not Find ptY in ptlist");
+			ptX.merge(ptY);
 			ptlist.removeTreeContaining(rootPTY);
-			ptlist.append(currPT);
-			ptlist.size--;
+			ptlist.append(ptX);
 		}
 
 		return result;
@@ -171,29 +172,30 @@ public class PartialTreeList implements Iterable<PartialTree> {
     public PartialTree removeTreeContaining(Vertex vertex) 
     throws NoSuchElementException {
     		/* COMPLETE THIS METHOD */
+		if(size < 1) throw new NoSuchElementException();
 
+		Node ptr = rear.next;
+		Node prev = rear;
 
-		Node ptr = rear;
 		do{
 
-			PartialTree partialTreeToDel = ptr.next.tree;
-			MinHeap<Arc> priorityQ = new MinHeap<>(ptr.next.tree.getArcs());
+			if(ptr.tree.getRoot().equals(vertex)){
 
-			while(!priorityQ.isEmpty()){
-				Arc curr = priorityQ.deleteMin();
-				if(curr.getv1().equals(vertex)){
-					ptr.next = ptr.next.next;
-
-					if(rear.tree.getRoot().equals(vertex)){
-						rear = rear.next;
-					}
-
-					return partialTreeToDel;
+				if(rear.tree.getRoot().equals(vertex)){
+					//At this point, ptr == rear && prev == rear.prev
+					rear = prev;
 				}
+
+				PartialTree deletedTree = ptr.tree;
+				prev.next = ptr.next;
+				size--;
+
+				return deletedTree;
 			}
 
+			prev = ptr;
 			ptr = ptr.next;
-		} while (ptr != rear);
+		} while (ptr != rear.next);
 
     		throw new NoSuchElementException();
      }
