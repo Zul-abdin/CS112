@@ -6,5 +6,5 @@ Rutgers Spring 2019
 - [x] Linear Structures
 - [x] Search Structures
 - [x] Binary Tree and Applications
-- [ ] Graphs
+- [x] Graphs
 - [ ] Sorting
